@@ -8,59 +8,108 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final _formKey = GlobalKey<FormState>(); // ✅ Form key
-  final TextEditingController _rollController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final validator = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    // Dispose of controllers to free memory
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text("Diddys party0")),
+        backgroundColor: const Color(0xFFFDC500),
+        title: const Center(child: Text("EXCESS")),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form( // ✅ Wrap your fields in Form
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Welcome to party",
-                style: TextStyle(fontSize: 25, color: Colors.teal),
+      body: Column(
+        children: [
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 200),
+              child: Text(
+                "Welcome to Sign In Screen",
+                style: TextStyle(
+                  fontSize: 40,
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _rollController,
-                decoration: InputDecoration(
-                  hintText: "Enter your college roll.no",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: [
+                Form(
+                  key: validator, // ✅ attach key here
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter Email";
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: "Enter your Email",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: TextFormField(
+                          controller: passwordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter Password";
+                            }
+                            return null;
+                          },
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.blueAccent.withOpacity(0.1),
+                            hintText: "Enter your Password",
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.amberAccent),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your roll number';
-                  }
-                  if (!RegExp(r'^\d+$').hasMatch(value)) {
-                    return 'Only numbers allowed';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Roll No: ${_rollController.text} submitted!")),
-                    );
-                  }
-                },
-                child: const Text("Submit"),
-              ),
-            ],
+                IconButton(
+                  onPressed: () {
+                    if (validator.currentState?.validate() ?? false) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Login Successful")),
+                      );
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.login,
+                    size: 50,
+                    color: Colors.deepOrangeAccent,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
